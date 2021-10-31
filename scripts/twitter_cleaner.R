@@ -72,4 +72,4 @@ tmap_save(full_screen_map, filename = "full_screen_map.html")
 by_conference_map <- tm_shape(tweet.points)+tm_dots(col = "conference")
 
 
-tmap_save(by_conference_map, filename = "full_screen_map.html")
+tmap_save(by_conference_map, filename = "by_conference_map.html")
