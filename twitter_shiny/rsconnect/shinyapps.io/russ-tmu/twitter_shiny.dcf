@@ -1,0 +1,13 @@
+name: twitter_shiny
+title: twitter_shiny
+username:
+account: russ-tmu
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 5099263
+bundleId: 5239952
+url: https://russ-tmu.shinyapps.io/twitter_shiny/
+when: 1636623278.11868
+lastSyncTime: 1636623278.11868
+asMultiple: FALSE
+asStatic: FALSE
