@@ -1,4 +1,4 @@
-tweets <- read.csv("./data/tweet_information_location.csv")
+tweets <- read.csv("./data/tweet_information_location.csv") 
 
 # step 1: initial data exploration
 
@@ -73,3 +73,10 @@ by_conference_map <- tm_shape(tweet.points)+tm_dots(col = "conference")
 
 
 tmap_save(by_conference_map, filename = "by_conference_map.html")
+
+
+#next steps:
+
+#1. a shiny points map
+
+#2. incidence map
