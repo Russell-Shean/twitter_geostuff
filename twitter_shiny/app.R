@@ -4,6 +4,7 @@ library(shiny)
 library(tmap)
 library(dplyr)
 
+load("./data/tweet_points_sf.rda")
 
 ui <- fluidPage(
 

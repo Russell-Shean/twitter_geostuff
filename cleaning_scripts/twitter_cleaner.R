@@ -67,15 +67,17 @@ tweet_points <- SpatialPointsDataFrame(coords=twitter_coords ,
 tweet_points_sf <- st_as_sf(tweet_points)
 
 
-full_screen_map <- tm_shape(tweet.points)+tm_dots()
+full_screen_map <- tm_shape(tweet_points)+tm_dots()
 
 tmap_save(full_screen_map, filename = "./HTML_files/full_screen_map.html")
 
-by_conference_map <- tm_shape(tweet.points)+tm_dots(col = "conference")
+by_conference_map <- tm_shape(tweet_points)+tm_dots(col = "conference")
 
 
 tmap_save(by_conference_map, filename = "./HTML_files/by_conference_map.html")
 
+
+save(tweet_points_sf, file = "./twitter_shiny/data/tweet_points_sf.rda")
 
 #next steps:
 
