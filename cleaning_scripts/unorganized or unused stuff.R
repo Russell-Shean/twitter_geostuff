@@ -1,4 +1,4 @@
-tweets <- read.csv("./data/tweet_information_location.csv") 
+#unorganized or unused stuff
 
 # step 1: initial data exploration
 
@@ -27,16 +27,27 @@ ggplot(tweets)+geom_point(aes(x=no_tweets, y= interactions, color= conference))
 
 #step 2: load shape files and plot lat-longs
 
-library(sf)
+world_shp <- st_read("./shape_files/ne_110m_admin_0_countries.shp")
+
+
+# https://tapiquen-sig.jimdofree.com/english-version/free-downloads/world/
+
+world_shp2 <- st_read("./shape_files/World_Countries.shp")
+
+world_tweets <- world_shp2  full_join()
+
+tm_shape(world_shp2)+
+  tm_borders()+
+  tm_shape(tweet_points_sf)+
+  tm_dots(col = "red")+
+  tm_layout(frame = FALSE)
+
+library(tmap)
+
 library(GISTools)
 library(rgeos)
 library(spatstat)
 library(spatial)
-
-world_shp <- st_read("./shape_files/ne_110m_admin_0_countries.shp")
-
-
-library(tmap)
 
 
 tm_shape(world_shp)+tm_borders()
@@ -51,20 +62,6 @@ no_sudan <- no_rus[-15,]
 tm_shape(no_sudan)+tm_borders()
 
 st_crs(no_sudan)
-
-
-#step 3: convert lat long to a spatial object
-
-library(dplyr)
-
-twitter_coords <- tweets %>%
-  dplyr::select(longitude, latitude)
-
-tweet_points <- SpatialPointsDataFrame(coords=twitter_coords , 
-                                   data=tweets,
-                                   proj4string = CRS("+init=epsg:4326"))
-
-tweet_points_sf <- st_as_sf(tweet_points)
 
 
 full_screen_map <- tm_shape(tweet_points)+tm_dots()
