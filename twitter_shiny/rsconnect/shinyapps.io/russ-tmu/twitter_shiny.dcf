@@ -5,9 +5,9 @@ account: russ-tmu
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 5099263
-bundleId: 5240850
+bundleId: 5269745
 url: https://russ-tmu.shinyapps.io/twitter_shiny/
-when: 1636644598.28415
-lastSyncTime: 1636644598.28415
+when: 1637312194.32704
+lastSyncTime: 1637312194.32704
 asMultiple: FALSE
 asStatic: FALSE

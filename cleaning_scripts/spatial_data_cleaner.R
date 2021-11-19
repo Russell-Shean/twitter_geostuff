@@ -139,3 +139,4 @@ rm(country_tweet_summaries, world_pop, world_shp)
 
 #this saves the country shape file to the shiny repository for later use
 save(world_tweets, file = "./twitter_shiny/data/world_tweets.rda")
+
