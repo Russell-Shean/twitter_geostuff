@@ -1,103 +1,62 @@
-#unorganized or unused stuff
-
-# step 1: initial data exploration
-
-
-range(tweets$int_ratio)
-
-library(dplyr)
-library(ggplot2)
+################################################################################
+################################################################################
+#                                                                              #
+#                     Step 1: Points                                           #
+#                                                                              #
+################################################################################
+################################################################################
 
 
-# various plots exploring the range of number of tweets, interactions, and the ratio between them
-tweets %>% 
-  filter(country!="USA")%>%
-  ggplot()+
-  geom_point(aes(x=no_tweets, y= interactions, color= region))
+#load the twitter data
+tweets <- read.csv("./data/tweet_information_location.csv") 
 
+#load some libraries that we'll need
+require(sf)
+require(sp)
+require(dplyr)
 
-ggplot(tweets)+geom_point(aes(x=no_tweets, y= interactions, color= conference))
+# pull out the coordinates for later use in making the sf dataframe
+twitter_coords <- tweets %>%
+  dplyr::select(longitude, latitude)
 
-# here's where the shape files came from
+# first we'll make a sp spatial data frame using the coordinates we just pulled out and the CRS of epsg code 4326
+tweet_points <- SpatialPointsDataFrame(coords=twitter_coords , 
+                                   data=tweets,
+                                   proj4string = CRS("+init=epsg:4326"))
 
-# https://www.naturalearthdata.com/features/
+#then we convert the sp dataframe to a simple features dataframe
+tweet_points_sf <- st_as_sf(tweet_points)
 
-# https://www.statsilk.com/maps/download-free-shapefile-maps
+#now we remove som intermediate data structures we don't need
+rm(tweet_points,twitter_coords)
 
-
-#step 2: load shape files and plot lat-longs
-
-world_shp <- st_read("./shape_files/ne_110m_admin_0_countries.shp")
-
-
-# https://tapiquen-sig.jimdofree.com/english-version/free-downloads/world/
-
-world_shp2 <- st_read("./shape_files/World_Countries.shp")
-
-world_tweets <- world_shp2  full_join()
-
-tm_shape(world_shp2)+
-  tm_borders()+
-  tm_shape(tweet_points_sf)+
-  tm_dots(col = "red")+
-  tm_layout(frame = FALSE)
-
-library(tmap)
-
-library(GISTools)
-library(rgeos)
-library(spatstat)
-library(spatial)
-
-
-tm_shape(world_shp)+tm_borders()
-
-
-no_rus <- world_shp[-19,]
-
-tm_shape(no_rus)+tm_borders()
-
-no_sudan <- no_rus[-15,]
-
-tm_shape(no_sudan)+tm_borders()
-
-st_crs(no_sudan)
-
-
-full_screen_map <- tm_shape(tweet_points)+tm_dots()
-
-tmap_save(full_screen_map, filename = "./HTML_files/full_screen_map.html")
-
-by_conference_map <- tm_shape(tweet_points)+tm_dots(col = "conference")
-
-
-tmap_save(by_conference_map, filename = "./HTML_files/by_conference_map.html")
-
-
+#this saves the points to the shiny repository for later use
 save(tweet_points_sf, file = "./twitter_shiny/data/tweet_points_sf.rda")
 
-#next steps:
 
-#1. a shiny points map
+################################################################################
+################################################################################
+#                                                                              #
+#                     Step 2: Countries                                        #
+#                                                                              #
+################################################################################
+################################################################################
 
-#2. incidence map
 
+# load the countries
+world_shp <- st_read("./shape_files/World_Countries.shp")
 
 # shape file source
 # https://tapiquen-sig.jimdofree.com/english-version/free-downloads/world/
 
-require(sf)
-require(dplyr)
-
-world_shp <- st_read("./shape_files/World_Countries.shp")
-
-
-
 
 # import world population data
+
+#we'll need these libraries to pull JSON files from the web
 library(jsonlite)
 library(rjson)
 
+#this pulls world population data from 2019 from the World Bank api
 
 # changing the url allows us to change stuff like the date range, the variables we want to import etc. 
 world_pop <- jsonlite::fromJSON("http://api.worldbank.org/countries/all/indicator/SP.POP.TOTL?per_page=2000&date=2019&format=json", flatten=TRUE)[[2]]
@@ -127,9 +86,7 @@ world_pop <- world_pop %>%
 
 
 
-# And then the countries that don't match on the shape file
-
-#first standardize the names
+# And then standardize the names of countries that don't match between the shape file and world bank data
 world_shp <- world_shp %>%
   mutate(COUNTRY=replace(COUNTRY,COUNTRY=="United Kingdom","UK"),
          COUNTRY=replace(COUNTRY,COUNTRY== "United States",  "USA"  ), 
@@ -178,74 +135,7 @@ world_tweets <- world_shp %>%
 world_tweets <-  world_tweets %>% 
   mutate(across(everything() & !country.id, ~replace(.,is.na(.),0)))
 
-world_tweets %>% st_drop_geometry() %>% View()
+rm(country_tweet_summaries, world_pop, world_shp)
 
-world_shp %>% 
-  filter(is.na(population))%>%
-  select(country) %>%
-  unique()
-
-
-
-##############################################################################################
-####    Stuff we're still working on     ########################################
-###############################################################################
-
-
-# add population data to points
-tweet_points2 <- world_pop %>%
-  select(country.id, country, population) %>%
-  right_join(tweet_points_sf, by= c("country"="country"))
-
-
-
-
-# manually add Taiwan's population
-tweet_points2[tweet_points2$country=="Taiwan",]$population <- 23773876
-
-
-
-
-point_counts <- st_intersects(world_shp2, tweet_points_sf)
-
-
-tweet_points_sf$country_new <- "boogers!"
-
-for(i in 1:nrow(world_shp2)){
-  tweet_points_sf$country_new[point_counts[[i]]] <- world_shp2$COUNTRY[i]
-}
-
-
-# figure out if any other countries didn't work either
-tweet_points2 %>% 
-  filter(is.na(population))%>%
-  select(country) %>%
-  unique()
-
-
-
-#country shapes don't link to population'
-
-
-
-unique(world_pop$country.value)
-
-
-point_counts_us <- st_intersects(world_shp2[230,], tweet_points_sf)
-
-
-buffered_us <- st_buffer(world_shp2[230,],dist = 0.5)
-
-buffered_points <- st_buffer(tweet_points_sf, dist = 100)
-
-
-library(tmap)
-tmap_mode("view")
-
-tm_shape(buffered_us)+tm_borders(col= "red")+tm_shape(world_shp2[230,])+tm_borders(col = "green")+tm_shape(tweet_points_sf)+tm_dots(col = "blue")
-
-
-
-tm_shape(world_shp2)+ tm_borders() 
-
-
+#this saves the country shape file to the shiny repository for later use
+save(world_tweets, file = "./twitter_shiny/data/world_tweets.rda")
