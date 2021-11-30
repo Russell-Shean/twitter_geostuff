@@ -3,62 +3,65 @@
 library(shiny)
 library(tmap)
 library(dplyr)
+library(lubridate)
+library(sf)
 
 load("./data/tweet_points_sf.rda")
 load("./data/world_tweets.rda")
 
 ui <- navbarPage("Brain Science Conference Tweets",
                  tabPanel("Point map",
-                          fluidPage(
+                          
+                          bootstrapPage(
+                              #tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
+                              
+                              tmapOutput("Happy_mappy", height=1080), 
                               
                               
                               
-                              
-                              fluidRow(
-                                  column(4,
-                                         selectInput("color_var",
-                                                     "Color Variable",
-                                                     choices = c("conference", "year", "none"))),
-                                  
-                                  column(4,
-                                         
-                                         selectInput("size_var",
-                                                     "Size Variable",
-                                                     choices = c("no_tweets","likes","replies","retweets","interactions","int_ratio","none"))
-                                  )),
+                              absolutePanel(top = 80, left = 280, width = 125, 
+                                            selectInput("color_var",
+                                                        "Color Variable",
+                                                        choices = c("conference", "year", "none"))),
                               
                               
-                              fluidRow(
-                                  tmapOutput("Happy_mappy", height=1000)
-                              ),
-                              
-                              
-                          )),
+                              absolutePanel(top = 80, left = 110 ,width = 125,             
+                                            selectInput("size_var",
+                                                        "Size Variable",
+                                                        choices = c("no_tweets","likes","replies","retweets","interactions","int_ratio","none"))
+                              ))
+                          
+                          
+                          
+                          
+                 ),
+                 
+                 
+                 
                  tabPanel("Tweets by country map",
-                          fluidPage(
+                          bootstrapPage(
+                              #tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
+                              
+                              tmapOutput("countries_mappy", height=1080),
+                              
+                              absolutePanel(top = 80, left = 110, width = 125, 
+                                            selectInput("country_var",
+                                                        "Variable",
+                                                        choices = c("no_tweets","likes","replies","retweets","interactions","int_ratio"))),
                               
                               
                               
+                              absolutePanel(top = 100, left = 300,
+                                            checkboxInput("per_capita",
+                                                          "Per Capita? (10^5 ppl)")
+                              )
                               
-                              fluidRow(
-                                  column(4,
-                                         selectInput("country_var",
-                                                     "Variable",
-                                                     choices = c("no_tweets","likes","replies","retweets","interactions","int_ratio"))),
-                                  
-                                  column(4,
-                                         
-                                         checkboxInput("per_capita",
-                                                       "Per Capita? (10^5 ppl)")
-                                  )),
-                              
-                              
-                              fluidRow(
-                                  tmapOutput("countries_mappy", height=1000)
-                              ),
                               
                               
                           )),
+                 
+                 
+                 
                  tabPanel("Charts and stuff")
 )
 

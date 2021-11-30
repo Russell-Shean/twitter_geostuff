@@ -14,6 +14,7 @@ tweets <- read.csv("./data/tweet_information_location.csv")
 require(sf)
 require(sp)
 require(dplyr)
+library(lubridate)
 
 # pull out the coordinates for later use in making the sf dataframe
 twitter_coords <- tweets %>%
@@ -105,7 +106,8 @@ world_shp <- world_pop %>%
 
 
 # manually add Taiwan's population
-world_shp[world_shp$country=="Taiwan",]$population <- 23773876
+world_shp[world_shp$country=="Taiwan",]$population <- 23603121
+
 
 # Taiwan does not appear in the World bank's dataset, bc the world bank has capitulated to the CCP
 # probably the reason, my guess, I dunno for sure
