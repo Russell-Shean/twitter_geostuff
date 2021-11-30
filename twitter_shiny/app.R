@@ -29,7 +29,7 @@ ui <- navbarPage("Brain Science Conference Tweets",
                               
                               
                               fluidRow(
-                                  tmapOutput("Happy_mappy")
+                                  tmapOutput("Happy_mappy", height=1000)
                               ),
                               
                               
@@ -49,12 +49,12 @@ ui <- navbarPage("Brain Science Conference Tweets",
                                   column(4,
                                          
                                          checkboxInput("per_capita",
-                                                       "Per Capita?")
+                                                       "Per Capita? (10^5 ppl)")
                                   )),
                               
                               
                               fluidRow(
-                                  tmapOutput("countries_mappy")
+                                  tmapOutput("countries_mappy", height=1000)
                               ),
                               
                               
@@ -79,7 +79,7 @@ server <- function(input, output) {
         if(input$per_capita==TRUE){
             
             world_tweets <- world_tweets %>%
-                mutate(across(no_tweets:int_ratio, ~ . /population))
+                mutate(across(no_tweets:int_ratio, ~ round(. /population*10^5)))
             
         }
         

@@ -19,6 +19,9 @@ require(dplyr)
 twitter_coords <- tweets %>%
   dplyr::select(longitude, latitude)
 
+#this fixes the format for some of the dates
+tweets$year <- paste(tweets$year,"01", "01", sep = "-") %>% as.Date() %>% year()
+
 # first we'll make a sp spatial data frame using the coordinates we just pulled out and the CRS of epsg code 4326
 tweet_points <- SpatialPointsDataFrame(coords=twitter_coords , 
                                    data=tweets,
@@ -27,7 +30,9 @@ tweet_points <- SpatialPointsDataFrame(coords=twitter_coords ,
 #then we convert the sp dataframe to a simple features dataframe
 tweet_points_sf <- st_as_sf(tweet_points)
 
-#now we remove som intermediate data structures we don't need
+
+
+#now we remove some intermediate data structures we don't need
 rm(tweet_points,twitter_coords)
 
 #this saves the points to the shiny repository for later use
@@ -105,7 +110,7 @@ world_shp[world_shp$country=="Taiwan",]$population <- 23773876
 # Taiwan does not appear in the World bank's dataset, bc the world bank has capitulated to the CCP
 # probably the reason, my guess, I dunno for sure
 # I don't know if this means I have to subtract 23 million from the world bank's population of China
-# We can deal with this question luego
+# We can deal with that question later
 
 
 #change the population of countries with NA population and zero tweets to  1
