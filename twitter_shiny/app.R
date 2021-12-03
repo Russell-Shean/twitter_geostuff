@@ -49,14 +49,28 @@ ui <- navbarPage("Brain Science Conference Tweets",
                               absolutePanel(top = 80, left = 110, width = 125, 
                                             selectInput("country_var",
                                                         "Variable",
-                                                        choices = c("no_tweets","likes","replies","retweets","interactions","int_ratio"))),
+                                                        choices = c("no_tweets","likes","replies","retweets","interactions","int_ratio","total_articles"))),
                               
                               
                               
-                              absolutePanel(top = 100, left = 300,
-                                            checkboxInput("per_capita",
-                                                          "Per Capita? (10^5 ppl)")
-                              )
+                              #absolutePanel(top = 100, left = 300,
+                               #             checkboxInput("per_capita",
+                                #                          "Per Capita? (10^5 ppl)")
+                            #  ),
+                              
+                              absolutePanel(top = 100, left = 300, 
+                                            radioButtons("normalize_method",
+                                                         "How would you like to normalize?",
+                                                         choiceValues = c("per_capita","per_publications","no_normalize"),
+                                                         choiceNames = c("Per Capita? (10^5 ppl)","Per total nueroscience publications?","Don't normalize"),
+                                                         selected = "no_normalize",
+                                                         inline = TRUE)
+                                            ),
+                            absolutePanel(top = 140, left = 500 ,
+                                         checkboxInput("exclude_nigeria",
+                                                      "Exclude Nigeria?",
+                                                       value=FALSE)
+                              ),
                               
                               
                               
@@ -116,17 +130,36 @@ server <- function(input, output) {
                                                           "retweets","replies","likes","interactions","int_ratio"))})
     
     output$countries_mappy <- renderTmap({
-        if(input$per_capita==TRUE){
+        #if(input$per_capita==TRUE){
+         #   
+          #  world_tweets <- world_tweets %>%
+           #     mutate(across(no_tweets:int_ratio, ~ round(. /population*10^5)))
+            
+    #    }
+        
+        if(input$exclude_nigeria==TRUE){
+            world_tweets <- world_tweets %>%
+                filter(country!="Nigeria")
+        }
+        
+        if(input$normalize_method=="per_capita"){
+               
+              world_tweets <- world_tweets %>%
+                 mutate(across(no_tweets:int_ratio, ~ round(. /population*10^5)))
+            
+        }
+        
+        if(input$normalize_method=="per_publications"){
             
             world_tweets <- world_tweets %>%
-                mutate(across(no_tweets:int_ratio, ~ round(. /population*10^5)))
+                mutate(across(no_tweets:int_ratio, ~ round(. /total_articles)))  
             
         }
         
         tm_shape(world_tweets) + tm_fill({{input$country_var}},
                                          alpha= 0.5,
                                          popup.vars = c("no_tweets",    "likes",        "replies",      "retweets",    
-                                                         "interactions", "int_ratio", "population"))
+                                                         "interactions", "int_ratio", "population","total_articles"))
     })
 }
 

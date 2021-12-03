@@ -154,6 +154,28 @@ rm(country_tweet_summaries, world_pop, world_shp)
 #####
 #########################################################################################
 
+#first we need to import the publication data
+articles <- read.csv("./data/article_locations.csv")
+
+
+
+#this shows every article published in several major neuroscience journals between 2010-2020
+#we have access to pmid number and journal
+#for now I won't look at journals 
+#and will just aggregate by country
+
+
+article_summaries  <- articles %>%
+                      group_by(country) %>%
+                      count()%>%
+                      rename(total_articles=n)
+
+
+
+#then we will merge the article counts onto the world countries shape files
+world_tweets <- world_tweets %>%
+  left_join(article_summaries, by = ("country"="country")) %>%
+  st_sf(sf_column_name = "geometry")                                      # this step is necessary because somehow dplyr drops the geometry during left_join
 
 
 
