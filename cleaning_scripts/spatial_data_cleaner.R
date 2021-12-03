@@ -23,6 +23,9 @@ twitter_coords <- tweets %>%
 #this fixes the format for some of the dates
 tweets$year <- paste(tweets$year,"01", "01", sep = "-") %>% as.Date() %>% year()
 
+#and this makes a factor
+tweets$year <- factor(tweets$year, ordered = FALSE)
+
 # first we'll make a sp spatial data frame using the coordinates we just pulled out and the CRS of epsg code 4326
 tweet_points <- SpatialPointsDataFrame(coords=twitter_coords , 
                                    data=tweets,
@@ -140,9 +143,19 @@ world_tweets <- world_shp %>%
 # and now let's replace NA's with zeros
 # For everything!!!!!
 world_tweets <-  world_tweets %>% 
-  mutate(across(everything() & !country.id, ~replace(.,is.na(.),0)))
+  mutate(across(everything() & !country.id, ~replace(.,is.na(.),0)))%>%
+  relocate(country, .before=country.id)
 
 rm(country_tweet_summaries, world_pop, world_shp)
+
+#####################################################################################
+#####
+####                Step 3: Normalization by country research output
+#####
+#########################################################################################
+
+
+
 
 #this saves the country shape file to the shiny repository for later use
 save(world_tweets, file = "./twitter_shiny/data/world_tweets.rda")

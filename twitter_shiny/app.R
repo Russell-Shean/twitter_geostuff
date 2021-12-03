@@ -27,7 +27,11 @@ ui <- navbarPage("Brain Science Conference Tweets",
                                             selectInput("size_var",
                                                         "Size Variable",
                                                         choices = c("no_tweets","likes","replies","retweets","interactions","int_ratio","none"))
-                              ))
+                              ),
+                              absolutePanel(top = 100, left = 450,
+                                            checkboxInput("years_ordered",
+                                                          "Should years be colored in order?",
+                                                          value = TRUE)))
                           
                           
                           
@@ -99,9 +103,17 @@ server <- function(input, output) {
     
     
     output$Happy_mappy <- renderTmap({
+        if(input$years_ordered == TRUE) {
+            
+            tweet_points_sf$year <- factor(tweet_points_sf$year, ordered = TRUE)
+        }
+        
+        
         tm_shape(tweet_points_sf) + tm_dots(size = ifelse(input$size_var=="none",1,{{input$size_var}}),
                                             col = ifelse(input$color_var=="none","green",{{input$color_var}}),
-                                            alpha= 0.5 )})
+                                            alpha= 0.5,
+                                            popup.vars= c("country","conference","year","no_tweets",
+                                                          "retweets","replies","likes","interactions","int_ratio"))})
     
     output$countries_mappy <- renderTmap({
         if(input$per_capita==TRUE){
@@ -112,7 +124,9 @@ server <- function(input, output) {
         }
         
         tm_shape(world_tweets) + tm_fill({{input$country_var}},
-                                         alpha= 0.5 )
+                                         alpha= 0.5,
+                                         popup.vars = c("no_tweets",    "likes",        "replies",      "retweets",    
+                                                         "interactions", "int_ratio", "population"))
     })
 }
 
