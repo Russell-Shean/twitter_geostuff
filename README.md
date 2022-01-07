@@ -1,11 +1,5 @@
-# twitter_geostuff
+# Neuroscience Conference Tweets
 
-Ideas:
+This is the code for the following interactive data visualization: https://russ-tmu.shinyapps.io/twitter_shiny/
 
-- number of tweets standardized by population
-  1. aggregate tweets by country
-  2. merge agregated tweet counts onto map shape file
-  3. divide by population
-  4. map
-
-- 
+Check it out at the link above, and then come back here to see the code I used to make it!
