@@ -1,5 +1,5 @@
 # Neuroscience Conference Tweets
 
-This is the code for the following interactive data visualization: https://russ-tmu.shinyapps.io/twitter_shiny/
-
+This visualizuation was built as part of the suplementary material for this paper: https://peerj.com/articles/15270/ 
+The data visualization is live here: https://russ-tmu.shinyapps.io/twitter_shiny/
 Check it out at the link above, and then come back here to see the code I used to make it!
